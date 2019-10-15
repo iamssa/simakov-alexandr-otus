@@ -1,21 +1,26 @@
 const fs = require('fs')
 const path = require('path')
-const base = 'foo/'
  
 const readFile = (dir, cb) => {
 
   let results = {dirs: [], files: []}
 
   fs.readdir(dir, (err, items) => {
-    if (err)  return cb(err) 
- 
     var itemList = items.length
-    if (!itemList){ return cb(null, results)}
+
+    if (err)  {
+      return cb(err);
+    }
+ 
+    if (!itemList){ 
+      return cb(null, results);
+    }
+
     items.forEach((file) => {
-      file = path.join(dir, file)
+      file = path.join(dir, file);
       fs.stat(file, (err, stat) => {
         if (stat && stat.isDirectory()) {
-          results.dirs.push(file)  
+          results.dirs.push(file);
           readFile(file, (err, res) => {
             results.files = results.files.concat(res.files)
             results.dirs = results.dirs.concat(res.dirs)
