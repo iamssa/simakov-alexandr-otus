@@ -17,13 +17,15 @@ var fn2 = () => new Promise(resolve => {
 })
 
 function promiseReduce(asyncFunctions, reduce, initialValue) {
-    var result = initialValue;
+    var memo = initialValue;
+    var isResolved = [];
     asyncFunctions.forEach(function(asFunction){
-        var funcResult = await asFunction;
-        result = reduce(result, funcResult);
+        isResolved.push(asFunction().then(result => {
+            memo = reduce(memo, result);
+            return Promise.resolve(null);
+        }));
     });
-
-    return result;
+    return Promise.all(isResolved).then(result => memo);
 }
 
 promiseReduce(
